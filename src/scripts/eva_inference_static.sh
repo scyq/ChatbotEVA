@@ -1,6 +1,6 @@
 #! /bin/bash
 
-WORKING_DIR=/home/coai/eva-interactive/
+WORKING_DIR=$(pwd)
 
 MP_SIZE=1
 
@@ -9,7 +9,7 @@ NUM_GPUS_PER_WORKER=8
 DATA_PATH="${WORKING_DIR}/data/kdconv"
 
 CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva1.0_model_config.json"
-CKPT_PATH="${WORKING_DIR}/checkpoints/eva1.0"
+CKPT_PATH="${WORKING_DIR}/checkpoints"
 
 SAVE_PATH="${WORKING_DIR}/results/inference_static/"
 LOG_FILE="${SAVE_PATH}/log.txt"
