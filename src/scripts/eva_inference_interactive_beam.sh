@@ -6,7 +6,7 @@ MP_SIZE=1
 
 NUM_GPUS_PER_WORKER=1
 
-CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva1.0_model_config.json"
+CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva2.0_model_config.json"
 CKPT_PATH="${WORKING_DIR}/checkpoints"
 
 DS_CONFIG="${WORKING_DIR}/src/configs/deepspeed/eva_ds_config.json"

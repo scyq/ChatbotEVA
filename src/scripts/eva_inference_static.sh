@@ -8,7 +8,7 @@ NUM_GPUS_PER_WORKER=8
 
 DATA_PATH="${WORKING_DIR}/data/kdconv"
 
-CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva1.0_model_config.json"
+CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva2.0_model_config.json"
 CKPT_PATH="${WORKING_DIR}/checkpoints"
 
 SAVE_PATH="${WORKING_DIR}/results/inference_static/"

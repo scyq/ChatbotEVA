@@ -8,7 +8,7 @@ NUM_GPUS_PER_WORKER=4 # number of gpus used on one node
 
 DATA_PATH="${WORKING_DIR}/data/kdconv" # path of the directory of the dataset
 
-CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva1.0_model_config.json"
+CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva2.0_model_config.json"
 CKPT_PATH="${WORKING_DIR}/checkpoints"
 
 LR=${2-0.0001} # learning rate
