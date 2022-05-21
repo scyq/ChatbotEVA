@@ -2,14 +2,14 @@
 
 WORKING_DIR=$(pwd)
 
-MP_SIZE=1 # the model parallel size
+MP_SIZE=2 # the model parallel size
 
-NUM_GPUS_PER_WORKER=4 # number of gpus used on one node
+NUM_GPUS_PER_WORKER=2 # number of gpus used on one node
 
-DATA_PATH="${WORKING_DIR}/data/kdconv" # path of the directory of the dataset
+DATA_PATH="${WORKING_DIR}/data/psyqa" # path of the directory of the dataset
 
 CONFIG_PATH="${WORKING_DIR}/src/configs/model/eva2.0_model_config.json"
-CKPT_PATH="${WORKING_DIR}/checkpoints"
+CKPT_PATH="${WORKING_DIR}/mp2ckpt"
 
 LR=${2-0.0001} # learning rate
 WM=${3-0.01} # ratio of warmup steps
@@ -20,7 +20,7 @@ LOG_FILE="${SAVE_PATH}/log.txt"
 DS_CONFIG="${WORKING_DIR}/src/configs/deepspeed/eva_ds_config.json" # config of deepspeed
 TOKENIZER_PATH="${WORKING_DIR}/bpe_dialog_new" # vocab path
 
-BATCH_SIZE=16
+BATCH_SIZE=1
 TRAIN_ITER=-1 # total number of train iterations, if set to -1, the iterations depend on the training epochs (epochs * data_size / (batch_size * grad_acc) )
 EPOCHS=3
 

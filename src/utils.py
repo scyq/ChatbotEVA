@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """Utilities for logging and serialization"""
 
 import os
@@ -40,7 +39,9 @@ def save_rank_0(args, message):
 
 
 def set_deepspeed_activation_checkpointing(args, num_checkpoints):
-    deepspeed.checkpointing.configure(mpu, deepspeed_config=args.deepspeed_config, num_checkpoints=num_checkpoints)
+    deepspeed.checkpointing.configure(mpu,
+                                      deepspeed_config=args.deepspeed_config,
+                                      num_checkpoints=num_checkpoints)
     mpu.checkpoint = deepspeed.checkpointing.checkpoint
     mpu.get_cuda_rng_tracker = deepspeed.checkpointing.get_cuda_rng_tracker
     mpu.model_parallel_cuda_manual_seed = deepspeed.checkpointing.model_parallel_cuda_manual_seed
@@ -53,6 +54,7 @@ def initialize_distributed(args):
     device = args.rank % torch.cuda.device_count()
     if args.local_rank is not None:
         device = args.local_rank
+    print("device: ", device)
     torch.cuda.set_device(device)
     # Call the init process
     init_method = 'tcp://'
@@ -85,8 +87,7 @@ def get_checkpoint_tracker_filename(checkpoints_path):
     return os.path.join(checkpoints_path, 'latest_checkpointed_iteration.txt')
 
 
-def save_checkpoint(iteration, model, optimizer,
-                    lr_scheduler, args):
+def save_checkpoint(iteration, model, optimizer, lr_scheduler, args):
     """Save a model checkpoint."""
     if args.deepspeed:
         save_ds_checkpoint(iteration, model, args)
@@ -106,28 +107,35 @@ def save_ds_checkpoint(iteration, model, args):
 
     sd = {}
     sd['iteration'] = iteration
-      
-    model.save_checkpoint(args.save, str(iteration), client_state = sd, save_zero=False)
+
+    model.save_checkpoint(args.save,
+                          str(iteration),
+                          client_state=sd,
+                          save_zero=False)
 
 
 def get_checkpoint_iteration(args):
     tracker_filename = get_checkpoint_tracker_filename(args.load)
     if not os.path.isfile(tracker_filename):
-        print_rank_0('WARNING: could not find the metadata file {} '.format(tracker_filename))
-        print_rank_0('    will not load any checkpoints and will start from RANDOM')
+        print_rank_0('WARNING: could not find the metadata file {} '.format(
+            tracker_filename))
+        print_rank_0(
+            '    will not load any checkpoints and will start from RANDOM')
         return 0, False
-    
+
     iteration = 0
     with open(tracker_filename, 'r') as f:
         metastring = f.read().strip()
         try:
             iteration = int(metastring)
         except ValueError:
-            print_rank_0('ERROR: Invalid metadata file {}. Exiting'.format(tracker_filename))
+            print_rank_0('ERROR: Invalid metadata file {}. Exiting'.format(
+                tracker_filename))
             exit()
 
-    assert iteration > 0, 'error parsing metadata file {}'.format(tracker_filename)
-    
+    assert iteration > 0, 'error parsing metadata file {}'.format(
+        tracker_filename)
+
     return iteration, True
 
 
@@ -139,7 +147,12 @@ def load_checkpoint(args, model, optimizer=None, lr_scheduler=None):
     if not success:
         return 0
 
-    checkpoint_name, sd = model.load_checkpoint(args.load, iteration, load_optimizer_states=args.load_optimizer_states, load_lr_scheduler_states=args.load_lr_scheduler_states, load_module_strict=(not args.no_load_strict))
+    checkpoint_name, sd = model.load_checkpoint(
+        args.load,
+        iteration,
+        load_optimizer_states=args.load_optimizer_states,
+        load_lr_scheduler_states=args.load_lr_scheduler_states,
+        load_module_strict=(not args.no_load_strict))
 
     if checkpoint_name is None:
         if mpu.get_data_parallel_rank() == 0:
@@ -149,11 +162,12 @@ def load_checkpoint(args, model, optimizer=None, lr_scheduler=None):
     try:
         iteration = sd['iteration']
     except KeyError:
-        try: # Backward compatible with older checkpoints
+        try:  # Backward compatible with older checkpoints
             iteration = sd['total_iters']
         except KeyError:
-            print_rank_0('A metadata file exists but Unable to load iteration '
-                            ' from checkpoint {}, exiting'.format(checkpoint_name))
+            print_rank_0(
+                'A metadata file exists but Unable to load iteration '
+                ' from checkpoint {}, exiting'.format(checkpoint_name))
             exit()
 
     torch.distributed.barrier()
